@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f3bb8dc5-ce89-456b-82a1-ab61aea9291b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="a3b30918-3c12-491f-874b-4f4db5935e53" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="company" />
+	</db:config>
+	<flow name="db-munitFlow1" doc:id="ab65afc0-0e99-42ee-b3d1-e925d8d00df8" >
+		<http:listener doc:name="Listener" doc:id="fedac7a2-51d7-408b-9744-114dd85db1af" config-ref="HTTP_Listener_config" path="/dbmunit"/>
+		<set-variable value="#[attributes.queryParams.name]" doc:name="Set Variable" doc:id="f1fcdb02-d2ad-4a03-9242-e61720f25c40" variableName="custName"/>
+		<db:select doc:name="Select" doc:id="c7e54553-b153-40c9-8402-8821b60d018f" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employees where name= :custName]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"custName" : vars.custName
+}]]]></db:input-parameters>
+		</db:select>
+		<!-- [STUDIO:"transforms msg like db select"]<ee:transform doc:name="transforms msg like db select" doc:id="5c0a45ba-2657-4b47-9c46-751b5417c451" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var employees = [
+    {
+        name: "Dharani",
+        id: 101,
+        salary: 50000
+    },
+    {
+        name: "Ravi",
+        id: 102,
+        salary: 60000
+    },
+    {
+        name: "Priya",
+        id: 103,
+        salary: 70000
+    }
+&#93;
+
+var inputName = vars.custName
+
+&#45;&#45;-
+employees filter (emp) -> emp.name == inputName&#93;&#93;></ee:set-payload>
+			</ee:message>
+		</ee:transform> [STUDIO] -->
+		<choice doc:name="Choice" doc:id="dd21dd36-6231-4541-9f36-20925d59936c" >
+			<when expression="#[!isEmpty(payload)]">
+				<ee:transform doc:name="Transform Message" doc:id="b5077d31-b990-4853-b388-fb5d5beeda5d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="096ab52c-10c2-4f42-b41b-4ef6ea9f56a3" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"no records found"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
