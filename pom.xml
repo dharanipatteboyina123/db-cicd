@@ -14,7 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<app.runtime>4.11.3:4e-java17</app.runtime>
-		<app.runtime.cloudhub>4.11.3</app.runtime.cloudhub> 
+		<app.runtime.cloudhub>4.11.3</app.runtime.cloudhub>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
 		<munit.version>3.4.0</munit.version>
 	</properties>
@@ -26,29 +26,12 @@
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>3.2.0</version>
 			</plugin>
-			<plugin>
-               <groupId>org.mule.tools.maven</groupId>
-               <artifactId>mule-maven-plugin</artifactId>
-               <extensions>true</extensions>
-               <configuration>
-                    <cloudHubDeployment>
-                        <uri>https://anypoint.mulesoft.com</uri>
-                        <muleVersion>${app.runtime.cloudhub}</muleVersion>
-                        <username>${username}</username>
-                        <password>${password}</password>
-                        <applicationName>${appname}</applicationName>
-                        <businessGroup>${business}</businessGroup>
-                        <environment>${env}</environment>
-                        <workers>${workers}</workers>
-                        <workerType>${vCore}</workerType>
-                        <objectStoreV2>true</objectStoreV2>
-                    </cloudHubDeployment>
-               </configuration>
-            </plugin>
+
+			<!-- FIXED: Single merged mule-maven-plugin with all 3 fixes applied -->
 			<plugin>
 				<groupId>org.mule.tools.maven</groupId>
 				<artifactId>mule-maven-plugin</artifactId>
-				<version>${mule.maven.plugin.version}</version>
+				<version>${mule.maven.plugin.version}</version>  <!-- FIX 1: version present -->
 				<extensions>true</extensions>
 				<configuration>
 					<sharedLibraries>
@@ -57,8 +40,23 @@
 							<artifactId>mysql-connector-java</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
+					<cloudHubDeployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<muleVersion>${app.runtime.cloudhub}</muleVersion>  <!-- FIX 2: plain 4.11.3 -->
+						<releaseChannel>LTS</releaseChannel>                <!-- FIX 3: replaces :4e -->
+						<javaVersion>17</javaVersion>                       <!-- FIX 3: replaces -java17 -->
+						<username>${username}</username>
+						<password>${password}</password>
+						<applicationName>${appname}</applicationName>
+						<businessGroup>${business}</businessGroup>
+						<environment>${env}</environment>
+						<workers>${workers}</workers>
+						<workerType>${vCore}</workerType>
+						<objectStoreV2>true</objectStoreV2>
+					</cloudHubDeployment>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>com.mulesoft.munit.tools</groupId>
 				<artifactId>munit-maven-plugin</artifactId>
