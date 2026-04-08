@@ -72,6 +72,7 @@ output application/json
 				</ee:transform>
 			</otherwise>
 		</choice> [STUDIO] -->
+		<logger level="INFO" doc:name="Logger" doc:id="e882ff42-920e-4e4f-9361-9a6cf3d13f99" message='"tryinhg"'/>
 		<ee:transform doc:name="Transform Message" doc:id="5de4fbf6-b55d-48c7-9ef7-2fb2dd8f3a31" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
