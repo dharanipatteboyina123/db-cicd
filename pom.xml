@@ -32,7 +32,9 @@
                <configuration>
                     <cloudHubDeployment>
                         <uri>https://anypoint.mulesoft.com</uri>
-                        <muleVersion>${app.runtime}</muleVersion>
+                        <muleVersion>4.6</muleVersion>
+                        <releaseChannel>EDGE</releaseChannel>
+                        <javaVersion>17</javaVersion>
                         <username>${username}</username>
                         <password>${password}</password>
                         <applicationName>${appname}</applicationName>
